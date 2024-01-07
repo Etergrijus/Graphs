@@ -450,18 +450,22 @@ void removeVertex(int *vertexes, vector<vector<int>> &edgesMatrix, vector<int> &
     tree.pop_back();
 }
 
+void checkSolvingTask(const Graph &g, Graph &forest, vector<int> &tree,
+                      vector<vector<int>> &storage) {
+    Graph applicant = getDeletingEdges(g, forest);
+    auto comps = getConnectivityComponents(applicant);
+    if (comps.size() == 2 && isNoIsolatedVertexes(comps)) {
+        sort(tree.begin(), tree.end());
+        if (std::find(storage.begin(), storage.end(), tree) == storage.end())
+            storage.push_back(tree);
+    }
+}
+
 vector<vector<int>> _getAllSpanningTrees(int *vertexes, const int nEdges, const Graph &g, Graph &forest,
                                          vector<vector<int>> &edgesMatrix, vector<int> &tree,
                                          vector<vector<int>> &storage) {
     if (tree.size() == nEdges) {
-        Graph applicant = getDeletingEdges(g, forest);
-        auto comps = getConnectivityComponents(applicant);
-        if (comps.size() == 2 && isNoIsolatedVertexes(comps))
-            if (std::find(storage.begin(), storage.end(), tree) == storage.end())
-                storage.push_back(tree);
-        //out::outputVector(tree);
-
-        //out::outputVector(tree);
+        checkSolvingTask(g, forest, tree, storage);
         removeVertex(vertexes, edgesMatrix, tree, forest);
         return storage;
     }
@@ -471,19 +475,14 @@ vector<vector<int>> _getAllSpanningTrees(int *vertexes, const int nEdges, const 
         for (auto j = startPos; j < edgesMatrix.size(); j++) {
             auto value = edgesMatrix[i][j];
             if (value && (tree.empty() || std::find(tree.begin(), tree.end(), value) ==
-                                          tree.end())/*edgesMatrix[i][j] != *tree.rbegin()*/) {
+                                          tree.end())) {
                 tree.push_back(value);
                 vertexes[j] = vertexes[i];
 
                 forest[i][j] = true;
                 forest[j][i] = true;
 
-                Graph applicant = getDeletingEdges(g, forest);
-                auto comps = getConnectivityComponents(applicant);
-                if (comps.size() == 2 && isNoIsolatedVertexes(comps))
-                    if (std::find(storage.begin(), storage.end(), tree) == storage.end())
-                        storage.push_back(tree);
-                //out::outputVector(tree);
+                checkSolvingTask(g, forest, tree, storage);
 
                 if (tree.size() != 1 && *tree.rbegin() < *(tree.rbegin() + 1) && vertexes[i] == vertexes[j]) {
                     removeVertex(vertexes, edgesMatrix, tree, forest);
