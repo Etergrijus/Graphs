@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Program Files/JetBrains/CLion 2020.1/CLionProjects/DM41/graph.cpp
+iostream
+-
+fstream
+-
+vector
+-
+algorithm
+-
+random
+-
+graph.h
+C:/Program Files/JetBrains/CLion 2020.1/CLionProjects/DM41/graph.h
+
+C:/Program Files/JetBrains/CLion 2020.1/CLionProjects/DM41/graph.h
+
