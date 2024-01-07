@@ -10,6 +10,7 @@ typedef struct Edge {
 
 namespace out {
     void outputVector(std::vector<int> &v);
+
     void outputGraph(Graph &g);
 }
 
@@ -69,7 +70,6 @@ void kruskallAlg(const int nVertexes, const Graph &g,
 
 void convertAdjacencyToEdgesMatrix(Graph &g, std::vector<std::vector<int>> &edgesMatrix);
 
-void getAllSpanningTrees(int *vertexes, const int nEdges, const Graph &g, Graph &forest,
-                         std::vector<std::vector<int>> &edgesMatrix, std::vector<int> &tree);
+void getAllSpanningTrees(int nVertexes, int nEdges, Graph &g, std::vector<std::vector<int>> &storage);
 
 #endif //DM41_GRAPH_H

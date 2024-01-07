@@ -236,23 +236,11 @@ int main() {
 /*    auto n = getConnectivityComponents(g);
     cout << n.size();*/
 
-    vector<vector<int>> edgesMatrix;
-    edgesMatrix.resize(g.size());
-    for (auto &i: edgesMatrix)
-        i.resize(g.size());
+    vector<vector<int>> storage;
+    storage.reserve(10);
 
-    convertAdjacencyToEdgesMatrix(g, edgesMatrix);
-    for (auto &i: edgesMatrix)
+    getAllSpanningTrees(nVertexes, nVertexes - 1, g, storage);
+
+    for (auto &i: storage)
         out::outputVector(i);
-
-    vector<int> tree;
-    tree.reserve(nVertexes - 1);
-
-    int vertexes[nVertexes];
-    for (auto i = 1; i <= nVertexes; i++)
-        vertexes[i - 1] = i;
-
-    Graph forest;
-    resizeGraph(forest, g.size());
-    getAllSpanningTrees(vertexes, nVertexes - 1, g, forest, edgesMatrix, tree);
 }

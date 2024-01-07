@@ -309,7 +309,7 @@ vector<vector<int>> getConnectivityComponents(Graph &g) {
 /*    int vertexes[g.size()];
     for (auto i = 1; i <= g.size(); i++)
         vertexes[i - 1] = i;*/
-    vector<int> vertexes (g.size());
+    vector<int> vertexes(g.size());
     for (auto i = 1; i <= vertexes.size(); i++)
         vertexes[i - 1] = i;
 
@@ -431,7 +431,7 @@ bool isNoIsolatedVertexes(const vector<vector<int>> &comps) {
 }
 
 void removeVertex(int *vertexes, vector<vector<int>> &edgesMatrix, vector<int> &tree,
-        Graph &forest) {
+                  Graph &forest) {
     for (auto &i: edgesMatrix) {
         auto posCol = std::find(i.begin(), i.end(), *tree.rbegin());
         if (posCol != i.end()) {
@@ -450,34 +450,75 @@ void removeVertex(int *vertexes, vector<vector<int>> &edgesMatrix, vector<int> &
     tree.pop_back();
 }
 
-void getAllSpanningTrees(int *vertexes, const int nEdges, const Graph &g, Graph &forest,
-                         vector<vector<int>> &edgesMatrix, vector<int> &tree) {
+vector<vector<int>> _getAllSpanningTrees(int *vertexes, const int nEdges, const Graph &g, Graph &forest,
+                                         vector<vector<int>> &edgesMatrix, vector<int> &tree,
+                                         vector<vector<int>> &storage) {
     if (tree.size() == nEdges) {
         Graph applicant = getDeletingEdges(g, forest);
         auto comps = getConnectivityComponents(applicant);
         if (comps.size() == 2 && isNoIsolatedVertexes(comps))
-            out::outputVector(tree);
+            if (std::find(storage.begin(), storage.end(), tree) == storage.end())
+                storage.push_back(tree);
+        //out::outputVector(tree);
 
         //out::outputVector(tree);
         removeVertex(vertexes, edgesMatrix, tree, forest);
-        return;
+        return storage;
     }
 
     int startPos = 1;
     for (auto i = 0; i < edgesMatrix.size(); i++) {
-        for (auto j = startPos; j < edgesMatrix.size(); j++)
-            if (edgesMatrix[i][j])
-                if (tree.empty() || edgesMatrix[i][j] > *tree.rbegin() && vertexes[i] != vertexes[j]) {
-                    tree.push_back(edgesMatrix[i][j]);
-                    vertexes[j] = vertexes[i];
+        for (auto j = startPos; j < edgesMatrix.size(); j++) {
+            auto value = edgesMatrix[i][j];
+            if (value && (tree.empty() || std::find(tree.begin(), tree.end(), value) ==
+                                          tree.end())/*edgesMatrix[i][j] != *tree.rbegin()*/) {
+                tree.push_back(value);
+                vertexes[j] = vertexes[i];
 
-                    forest[i][j] = true;
-                    forest[j][i] = true;
+                forest[i][j] = true;
+                forest[j][i] = true;
 
-                    getAllSpanningTrees(vertexes, nEdges, g, forest, edgesMatrix, tree);
+                Graph applicant = getDeletingEdges(g, forest);
+                auto comps = getConnectivityComponents(applicant);
+                if (comps.size() == 2 && isNoIsolatedVertexes(comps))
+                    if (std::find(storage.begin(), storage.end(), tree) == storage.end())
+                        storage.push_back(tree);
+                //out::outputVector(tree);
+
+                if (tree.size() != 1 && *tree.rbegin() < *(tree.rbegin() + 1) && vertexes[i] == vertexes[j]) {
+                    removeVertex(vertexes, edgesMatrix, tree, forest);
+                    continue;
                 }
+
+                _getAllSpanningTrees(vertexes, nEdges, g, forest, edgesMatrix, tree, storage);
+            }
+        }
         startPos++;
     }
 
     removeVertex(vertexes, edgesMatrix, tree, forest);
+
+    return storage;
+}
+
+void getAllSpanningTrees(int nVertexes, const int nEdges, Graph &g, vector<vector<int>> &storage) {
+
+    int vertexes[nVertexes];
+    for (auto i = 1; i <= nVertexes; i++)
+        vertexes[i - 1] = i;
+
+    vector<vector<int>> edgesMatrix;
+    edgesMatrix.resize(g.size());
+    for (auto &i: edgesMatrix)
+        i.resize(g.size());
+    convertAdjacencyToEdgesMatrix(g, edgesMatrix);
+
+    vector<int> tree;
+    tree.reserve(nVertexes - 1);
+
+    Graph forest;
+    resizeGraph(forest, g.size());
+
+
+    _getAllSpanningTrees(vertexes, nEdges, g, forest, edgesMatrix, tree, storage);
 }
