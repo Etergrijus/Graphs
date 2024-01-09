@@ -6,21 +6,11 @@
 
 #IncludeRegexTransform: 
 
-C:/Program Files/JetBrains/CLion 2020.1/CLionProjects/DM41/graph.cpp
-iostream
+C:/Program Files/JetBrains/CLion 2020.1/CLionProjects/DM41/graph.h
+algorithm
 -
 fstream
 -
-vector
--
-algorithm
--
-random
--
-graph.h
-C:/Program Files/JetBrains/CLion 2020.1/CLionProjects/DM41/graph.h
-
-C:/Program Files/JetBrains/CLion 2020.1/CLionProjects/DM41/graph.h
 
 C:/Program Files/JetBrains/CLion 2020.1/CLionProjects/DM41/main.cpp
 iostream

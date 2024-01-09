@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <algorithm>
 #include <random>
@@ -9,12 +8,6 @@
 using namespace std;
 
 namespace out {
-    void outputVector(vector<int> &v) {
-        for (auto i: v)
-            cout << i << ' ';
-        cout << '\n';
-    }
-
     void outputGraph(Graph &g) {
         for (auto i = 0; i < g.size(); i++) {
             for (auto j = 0; j < g.size(); j++) {
@@ -24,38 +17,12 @@ namespace out {
         }
         cout << '\n';
     }
-}
 
-void resizeGraph(Graph &g, const int size) {
-    g.resize(size);
-    for (auto &i: g)
-        i.resize(size);
-}
-
-void readGraph(Graph &g, string &filename) {
-    ifstream f(filename);
-    f.open(filename, ios::in);
-    f.clear();
-
-    size_t size1 = std::count(istreambuf_iterator<char>(f),
-                              istreambuf_iterator<char>(), '\n') + 1;
-    resizeGraph(g, size1);
-
-    f.seekg(0, ios::beg);
-
-    if (f)
-        for (auto i = 0; i < g.size(); i++)
-            for (auto j = 0; j < g.size(); j++) {
-                bool buf;
-                f >> buf;
-                g[i][j] = buf;
-            }
-    else {
-        cout << "Epic fail";
-        return;
+    void outputDigraph(WeigDigraph &d) {
+        for (auto &i: d)
+            outputVector(i);
+        cout << '\n';
     }
-
-    f.close();
 }
 
 int rSliceSearch(vector<int> &v, int el, int start, int end) {
@@ -545,21 +512,27 @@ bool dijkstraAlg(WeigDigraph &d, const int startVertex, const int finishVertex) 
             tree[i - 1] = -1;
 
     int newVertex = startVertex - 1;
-    while (newVertex != finishVertex) {
+    while (newVertex != finishVertex - 1) {
         for (int i = 0; i < nVertexes; i++) {
             int weight = d[newVertex][i];
             if (weight) {
+                auto savedValue = deltas[i];
                 deltas[i] = min(deltas[i], deltas[newVertex] + weight);
-                tree[i] = newVertex;
+                if (savedValue != deltas[i])
+                    tree[i] = newVertex + 1;
             }
         }
 
         newVertex = getMinOfUnseen(vertexes, deltas);
-        if (newVertex == - 1)
+        if (newVertex == -1)
             return false;
         else
             vertexes[newVertex] = true;
     }
+
+    out::outputVector(vertexes);
+    out::outputVector(deltas);
+    out::outputVector(tree);
 
     return true;
 }

@@ -1,6 +1,9 @@
 #ifndef DM41_GRAPH_H
 #define DM41_GRAPH_H
 
+#include <algorithm>
+#include <fstream>
+
 typedef std::vector<std::vector<bool>> Graph;
 
 typedef std::vector<std::vector<int>> WeigDigraph;
@@ -11,9 +14,16 @@ typedef struct Edge {
 } Edge;
 
 namespace out {
-    void outputVector(std::vector<int> &v);
+    template<typename Type>
+    void outputVector(std::vector<Type> &v) {
+        for (auto i: v)
+            std::cout << i << ' ';
+        std::cout << '\n';
+    }
 
     void outputGraph(Graph &g);
+
+    void outputDigraph(WeigDigraph &d);
 }
 
 extern bool isHamiltone;
@@ -24,9 +34,39 @@ void getVector(std::vector<Type> &v, const int size, const int firstValue) {
     v.push_back(firstValue);
 }
 
-void resizeGraph(Graph &g, const int size);
+template<typename Type>
+void resizeGraph(std::vector<std::vector<Type>>&g, const int size) {
+    g.resize(size);
+    for (auto &i: g)
+        i.resize(size);
+}
 
-void readGraph(Graph &g, std::string &filename);
+template<typename Type>
+void readGraph(std::vector<std::vector<Type>>&g, std::string &filename) {
+    std::ifstream f(filename);
+    f.open(filename, std::ios::in);
+    f.clear();
+
+    size_t size1 = std::count(std::istreambuf_iterator<char>(f),
+                              std::istreambuf_iterator<char>(), '\n') + 1;
+    resizeGraph(g, size1);
+
+    f.seekg(0, std::ios::beg);
+
+    if (f)
+        for (auto i = 0; i < g.size(); i++)
+            for (auto j = 0; j < g.size(); j++) {
+                Type buf;
+                f >> buf;
+                g[i][j] = buf;
+            }
+    else {
+        std::cout << "Epic fail";
+        return;
+    }
+
+    f.close();
+}
 
 int rSliceSearch(std::vector<int> &v, int el, int start, int end);
 
@@ -73,5 +113,7 @@ void kruskallAlg(const int nVertexes, const Graph &g,
 void convertAdjacencyToEdgesMatrix(Graph &g, std::vector<std::vector<int>> &edgesMatrix);
 
 void getAllSpanningTrees(int nVertexes, Graph &g, std::vector<std::vector<int>> &storage);
+
+bool dijkstraAlg(WeigDigraph &d, const int startVertex, const int finishVertex);
 
 #endif //DM41_GRAPH_H

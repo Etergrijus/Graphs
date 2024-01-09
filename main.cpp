@@ -196,6 +196,7 @@ void task7(Graph &g1, Graph &g2) {
 //I walk
 //I disappear
 //Into the mighty forest
+/*
 int main() {
     Graph g;
     string filename = "graph2.txt";
@@ -213,8 +214,10 @@ int main() {
 
     cout << "------\n";
 
+*/
 /*    auto n = getConnectivityComponents(g);
-    cout << n.size();*/
+    cout << n.size();*//*
+
 
     vector<vector<int>> storage;
     storage.reserve(10);
@@ -223,4 +226,17 @@ int main() {
 
     for (auto &i: storage)
         out::outputVector(i);
+}*/
+
+
+//Lab 4.4
+int main() {
+    WeigDigraph d;
+    string filename = "graph1.txt";
+    readGraph(d, filename);
+
+    out::outputDigraph(d);
+    cout << "------\n";
+
+    dijkstraAlg(d, 1, 2);
 }
