@@ -3,6 +3,8 @@
 
 typedef std::vector<std::vector<bool>> Graph;
 
+typedef std::vector<std::vector<int>> WeigDigraph;
+
 typedef struct Edge {
     int vertex1;
     int vertex2;
@@ -56,7 +58,7 @@ void generateMaxSimpleChains(Graph &g, std::vector<int> &route, int startVertex)
 
 Graph getRandomGraph(int nVertexes, float nEdges, std::mt19937 &engine);
 
-void checkGamiltoneCycle(Graph &g, std::vector<int> &route, int startNode, int size);
+void checkHamiltoneCycle(Graph &g, std::vector<int> &route, int startNode, int size);
 
 std::vector<std::vector<int>> getConnectivityComponents(Graph &g);
 
@@ -70,6 +72,6 @@ void kruskallAlg(const int nVertexes, const Graph &g,
 
 void convertAdjacencyToEdgesMatrix(Graph &g, std::vector<std::vector<int>> &edgesMatrix);
 
-void getAllSpanningTrees(int nVertexes, int nEdges, Graph &g, std::vector<std::vector<int>> &storage);
+void getAllSpanningTrees(int nVertexes, Graph &g, std::vector<std::vector<int>> &storage);
 
 #endif //DM41_GRAPH_H

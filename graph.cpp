@@ -280,7 +280,7 @@ Graph getRandomGraph(int nVertexes, float nEdges, std::mt19937 &engine) {
 
 bool isHamiltone = false;
 
-void checkGamiltoneCycle(Graph &g, vector<int> &route, int startNode, int size) {
+void checkHamiltoneCycle(Graph &g, vector<int> &route, int startNode, int size) {
     if (isSimpleCycle(route, g) && route.size() == size + 1 /*|| isHamiltone*/) {
         //out::outputVector(route);
         //route.pop_back();
@@ -293,7 +293,7 @@ void checkGamiltoneCycle(Graph &g, vector<int> &route, int startNode, int size) 
             if (route.size() == size || std::find(route.begin(),
                                                   route.end(), i + 1) == route.end()) {
                 route.push_back(i + 1);
-                checkGamiltoneCycle(g, route, i, size);
+                checkHamiltoneCycle(g, route, i, size);
             }
 
     if (isHamiltone)
@@ -306,9 +306,6 @@ vector<vector<int>> getConnectivityComponents(Graph &g) {
     vector<vector<int>> result;
     result.reserve(3);
 
-/*    int vertexes[g.size()];
-    for (auto i = 1; i <= g.size(); i++)
-        vertexes[i - 1] = i;*/
     vector<int> vertexes(g.size());
     for (auto i = 1; i <= vertexes.size(); i++)
         vertexes[i - 1] = i;
@@ -405,8 +402,6 @@ void convertAdjacencyToEdgesMatrix(Graph &g, vector<vector<int>> &edgesMatrix) {
 }
 
 Graph getDeletingEdges(const Graph &g1, const Graph &g2) {
-    /*Graph result;
-    resizeGraph(result, g1.size());*/
     Graph result = g1;
 
     int startPos = 1;
@@ -500,8 +495,7 @@ vector<vector<int>> _getAllSpanningTrees(int *vertexes, const int nEdges, const 
     return storage;
 }
 
-void getAllSpanningTrees(int nVertexes, const int nEdges, Graph &g, vector<vector<int>> &storage) {
-
+void getAllSpanningTrees(int nVertexes, Graph &g, vector<vector<int>> &storage) {
     int vertexes[nVertexes];
     for (auto i = 1; i <= nVertexes; i++)
         vertexes[i - 1] = i;
@@ -518,6 +512,54 @@ void getAllSpanningTrees(int nVertexes, const int nEdges, Graph &g, vector<vecto
     Graph forest;
     resizeGraph(forest, g.size());
 
+    _getAllSpanningTrees(vertexes, nVertexes - 1, g, forest, edgesMatrix, tree, storage);
+}
 
-    _getAllSpanningTrees(vertexes, nEdges, g, forest, edgesMatrix, tree, storage);
+int getMinOfUnseen(const vector<bool> &v, vector<int> &deltas) {
+    int localMin = INT16_MAX;
+    int pos = -1;
+    for (int i = 0; i < v.size(); i++)
+        if (!v[i] && deltas[i] < localMin) {
+            localMin = deltas[i];
+            pos = i;
+        }
+
+    return pos;
+}
+
+bool dijkstraAlg(WeigDigraph &d, const int startVertex, const int finishVertex) {
+    int nVertexes = d.size();
+    vector<bool> vertexes(nVertexes);
+    vertexes[0] = true;
+
+    vector<int> deltas(nVertexes);
+    deltas[startVertex - 1] = 0;
+    for (int i = 1; i <= deltas.size(); i++)
+        if (i != startVertex)
+            deltas[i - 1] = INT16_MAX;
+
+    vector<int> tree(nVertexes);
+    tree[startVertex - 1] = 0;
+    for (int i = 1; i <= tree.size(); i++)
+        if (i != startVertex)
+            tree[i - 1] = -1;
+
+    int newVertex = startVertex - 1;
+    while (newVertex != finishVertex) {
+        for (int i = 0; i < nVertexes; i++) {
+            int weight = d[newVertex][i];
+            if (weight) {
+                deltas[i] = min(deltas[i], deltas[newVertex] + weight);
+                tree[i] = newVertex;
+            }
+        }
+
+        newVertex = getMinOfUnseen(vertexes, deltas);
+        if (newVertex == - 1)
+            return false;
+        else
+            vertexes[newVertex] = true;
+    }
+
+    return true;
 }

@@ -163,7 +163,7 @@ void task7(Graph &g1, Graph &g2) {
         getVector(route, g.size(), 1);
 
         isHamiltone = false;
-        checkGamiltoneCycle(g, route, 0, g.size());
+        checkHamiltoneCycle(g, route, 0, g.size());
 
         if (isHamiltone)
             nHamiltons++;
@@ -187,26 +187,6 @@ void task7(Graph &g1, Graph &g2) {
 
     cout << nAllGraphs << ' ' << nHamiltons << ' ' << nEilers;
 }*/
-
-int getCountEdges(Graph &g) {
-    int result = 0;
-    int startPos = 1;
-    for (auto i = 0; i < g.size(); i++) {
-        for (auto j = startPos; j < g.size(); j++)
-            if (g[i][j])
-                result++;
-        startPos++;
-    }
-
-    return result;
-}
-
-void putInBouq(set<int> &s, vector<vector<int>> &bouq,
-               const int value, const int bouqNumber) {
-    int val = *s.find(value);
-    bouq[bouqNumber].push_back(val);
-    s.erase(value);
-}
 
 //Lab 4.3
 //As I walk
@@ -239,7 +219,7 @@ int main() {
     vector<vector<int>> storage;
     storage.reserve(10);
 
-    getAllSpanningTrees(nVertexes, nVertexes - 1, g, storage);
+    getAllSpanningTrees(nVertexes, g, storage);
 
     for (auto &i: storage)
         out::outputVector(i);
