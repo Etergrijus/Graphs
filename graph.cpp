@@ -497,7 +497,7 @@ int getMinOfUnseen(const vector<bool> &v, vector<int> &deltas) {
 bool dijkstraAlg(WeigDigraph &d, const int startVertex, const int finishVertex) {
     int nVertexes = d.size();
     vector<bool> vertexes(nVertexes);
-    vertexes[0] = true;
+    vertexes[startVertex - 1] = true;
 
     vector<int> deltas(nVertexes);
     deltas[startVertex - 1] = 0;
@@ -512,12 +512,13 @@ bool dijkstraAlg(WeigDigraph &d, const int startVertex, const int finishVertex) 
             tree[i - 1] = -1;
 
     int newVertex = startVertex - 1;
-    while (newVertex != finishVertex - 1) {
+    while (std::find(vertexes.begin(), vertexes.end(), false) != vertexes.end()) {
         for (int i = 0; i < nVertexes; i++) {
             int weight = d[newVertex][i];
             if (weight) {
                 auto savedValue = deltas[i];
                 deltas[i] = min(deltas[i], deltas[newVertex] + weight);
+
                 if (savedValue != deltas[i])
                     tree[i] = newVertex + 1;
             }
@@ -530,9 +531,88 @@ bool dijkstraAlg(WeigDigraph &d, const int startVertex, const int finishVertex) 
             vertexes[newVertex] = true;
     }
 
-    out::outputVector(vertexes);
+/*    out::outputVector(vertexes);
     out::outputVector(deltas);
-    out::outputVector(tree);
+    out::outputVector(tree);*/
+
+    cout << deltas[finishVertex - 1];
 
     return true;
+}
+
+int dijkstraAlg_(WeigDigraph &d, const int startVertex, const int finishVertex) {
+    int nVertexes = d.size();
+    vector<bool> vertexes(nVertexes);
+    vertexes[startVertex - 1] = true;
+
+    vector<int> deltas(nVertexes);
+    deltas[startVertex - 1] = 0;
+    for (int i = 1; i <= deltas.size(); i++)
+        if (i != startVertex)
+            deltas[i - 1] = INT16_MAX;
+
+    vector<int> tree(nVertexes);
+    tree[startVertex - 1] = 0;
+    for (int i = 1; i <= tree.size(); i++)
+        if (i != startVertex)
+            tree[i - 1] = -1;
+
+    vector<int> route;
+    getVector(route, 4, startVertex);
+
+    int newVertex = startVertex - 1;
+    int oldVertex = newVertex;
+    while (std::find(vertexes.begin(), vertexes.end(), false) != vertexes.end()) {
+        for (int i = 0; i < nVertexes; i++) {
+            int weight = d[newVertex][i];
+            if (weight) {
+                auto savedValue = deltas[i];
+
+                if (i == startVertex - 1 && deltas[i] == 0)
+                    deltas[i] = deltas[newVertex] + weight;
+                else
+                    deltas[i] = min(deltas[i], deltas[newVertex] + weight);
+
+                if (savedValue != deltas[i]) {
+                    tree[i] = newVertex + 1;
+
+                    if (i == finishVertex - 1) {
+                        route.push_back(i + 1);
+                        if (*route.begin() == *route.rbegin()) {
+                            for (int j = 1; j < route.size(); j++)
+                                if (j != rSliceSearch(route, route[j], j, route.size()))
+                                    return INT16_MAX;
+                        } else
+                            return INT16_MAX;
+                        return deltas[finishVertex - 1];
+                    }
+                }
+            }
+        }
+
+        newVertex = getMinOfUnseen(vertexes, deltas);
+
+        if (newVertex == -1)
+            return INT16_MAX;
+        else
+            vertexes[newVertex] = true;
+
+        if (!d[oldVertex][newVertex])
+            route.pop_back();
+        route.push_back(newVertex + 1);
+        oldVertex = newVertex;
+    }
+}
+
+int getMinSimpleCycle(WeigDigraph &d) {
+    int result = INT16_MAX;
+    int startVertex = 1;
+    while (startVertex <= d.size()) {
+        int localMin = dijkstraAlg_(d, startVertex, startVertex);
+        if (localMin < result)
+            result = localMin;
+        startVertex++;
+    }
+
+    return result;
 }

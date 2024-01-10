@@ -116,4 +116,6 @@ void getAllSpanningTrees(int nVertexes, Graph &g, std::vector<std::vector<int>> 
 
 bool dijkstraAlg(WeigDigraph &d, const int startVertex, const int finishVertex);
 
+int getMinSimpleCycle(WeigDigraph &d);
+
 #endif //DM41_GRAPH_H

@@ -238,5 +238,6 @@ int main() {
     out::outputDigraph(d);
     cout << "------\n";
 
-    dijkstraAlg(d, 1, 2);
+    //dijkstraAlg(d, 1, 5);
+    cout << getMinSimpleCycle(d);
 }
